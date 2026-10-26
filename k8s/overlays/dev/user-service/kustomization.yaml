@@ -14,4 +14,4 @@ generators:
 images:
   - name: ghcr.io/vucongthanh92/courier/user-service
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/user-service
-    newTag: sha-d470ee868e41c7ef94de1b097cfebd4879815b44
+    newTag: sha-bbd43e9c3a3c601f2035dc0a1a6a0fd72a9d5c54
