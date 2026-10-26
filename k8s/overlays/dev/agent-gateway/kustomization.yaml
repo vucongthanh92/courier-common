@@ -1,0 +1,15 @@
+namespace: courier-dev
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../base/agent-gateway
+
+generators:
+  - ksops-generator.yaml
+
+images:
+  - name: ghcr.io/vucongthanh92/courier/agent-gateway
+    newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/agent-gateway
+    newTag: dev

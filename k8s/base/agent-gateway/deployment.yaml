@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-gateway
+  template:
+    metadata:
+      labels:
+        app: agent-gateway
+    spec:
+      containers:
+        - name: agent-gateway
+          image: ghcr.io/vucongthanh92/courier/agent-gateway:dev
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/agent-gateway"]
+          args: ["--config=/app/config/dev/config.yaml"]
+          envFrom:
+            - configMapRef:
+                name: agent-gateway-runtime
+          ports:
+            - name: http
+              containerPort: 5010
+          volumeMounts:
+            - name: config
+              mountPath: /app/config/dev/config.yaml
+              subPath: config.yaml
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          secret:
+            secretName: agent-gateway-config
