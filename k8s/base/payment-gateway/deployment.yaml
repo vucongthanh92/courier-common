@@ -16,10 +16,10 @@ spec:
         - name: payment-gateway
           image: ghcr.io/vucongthanh92/courier/payment-gateway:dev
           command: ["/app/payment-gateway"]
-          args: ["start", "--config=/app/config/dev/config.yaml"]
+          args: ["--config=/app/config/dev/config.yaml"]
           envFrom:
             - configMapRef:
-                name: payment-gateway-config
+                name: payment-gateway-runtime
           ports:
             - { name: http, containerPort: 5003 }
             - { name: grpc, containerPort: 6003 }

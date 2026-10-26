@@ -1,6 +1,15 @@
 namespace: courier-dev
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 resources:
   - ../../../base/payment-gateway
+
+generators:
+  - ksops-generator.yaml
+
 images:
   - name: ghcr.io/vucongthanh92/courier/payment-gateway
+    newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/payment-gateway
     newTag: sha-352f73a6c57f28242bb92619239c9550c657d612
