@@ -12,4 +12,4 @@ generators:
 images:
   - name: ghcr.io/vucongthanh92/courier/agent-gateway
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/agent-gateway
-    newTag: dev
+    newTag: sha-b0c2e1fcea52c92191ee233e0c416a757b0494f2
