@@ -18,8 +18,8 @@ Constraints that are already agreed:
   baseline.
 - CI: GitHub Actions. Image registry: ECR. CD: Argo CD. Argo CD does not build
   images.
-- No domain has been purchased and no AWS resource must be created during P0
-  or P1.
+- P0/P1 did not create AWS resources or purchase a domain. The later P2
+  rollout uses the purchased `courier.io.vn` domain; DNS remains in ZoneDNS.
 - All deployable repositories release from `main`.
 - Go dependencies are resolved from committed `go.mod` and `go.sum`; service
   repositories do not commit `vendor/` as the normal CI/CD dependency source.
@@ -132,9 +132,10 @@ because the remaining buffer is small.
 
 ## Network, DNS, and security plan
 
-- When a domain is selected, use dedicated development subdomains for Conversa,
-  Flikk, auth, chat API, and payment API. Confirm registration *and renewal*
-  price before buying; a registrar DNS service is acceptable.
+- `courier.io.vn` is the selected development domain and ZoneDNS is its
+  authoritative DNS provider. The initial frontend routes are
+  `/conversa/` and `/flikk/`; the Application EC2 Elastic IP is the only DNS
+  target. See [the public endpoint runbook](devops/courier-io-vn.md).
 - Public access is limited to the HTTPS frontends, required APIs, and validated
   webhooks. PostgreSQL, Redis, Kafka, Qdrant, Argo CD, Grafana, and pprof stay
   private or are accessed through a controlled tunnel/VPN.

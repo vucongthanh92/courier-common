@@ -3,7 +3,12 @@ output "application_instance_id" {
 }
 
 output "application_public_ip" {
-  value = aws_instance.application.public_ip
+  value = aws_eip.application.public_ip
+}
+
+output "application_ingress_ip" {
+  description = "Stable Elastic IP for public Courier HTTPS ingress and the courier.io.vn A record."
+  value       = aws_eip.application.public_ip
 }
 
 output "data_instance_id" {
