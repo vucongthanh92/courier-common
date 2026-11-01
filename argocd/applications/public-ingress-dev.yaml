@@ -9,8 +9,6 @@ spec:
     repoURL: https://github.com/vucongthanh92/courier-common.git
     targetRevision: main
     path: k8s/overlays/dev/public-ingress
-    plugin:
-      name: ksops
   destination:
     server: https://kubernetes.default.svc
     namespace: courier-dev
