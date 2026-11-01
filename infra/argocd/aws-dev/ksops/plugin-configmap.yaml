@@ -10,14 +10,10 @@ data:
     metadata:
       name: ksops
     spec:
-      discover:
-        find:
-          command:
-            - /usr/local/bin/kustomize
-            - build
-            - --enable-alpha-plugins
-            - --enable-exec
-            - .
+      # Do not configure discovery. Argo CD transfers an application archive to
+      # a CMP before it can evaluate discovery, which made non-secret overlays
+      # contend with encrypted workloads. Encrypted Applications select this
+      # plugin explicitly via spec.source.plugin.name: ksops.
       generate:
         command:
           - /usr/local/bin/kustomize

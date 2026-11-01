@@ -40,7 +40,11 @@ supplies the matching `argocd-cmp-server` binary.
 
 The KSOPS image is deliberately minimal and does not provide `sh`. The plugin
 therefore invokes its verified `/usr/local/bin/kustomize` binary directly for
-both discovery and rendering; do not change these commands to `sh -c`.
+rendering; do not change that command to `sh -c`. KSOPS has no automatic
+discovery rule: encrypted backend overlays name `ksops` explicitly in their
+Application manifests, while public overlays use Argo CD's built-in Kustomize
+renderer. This prevents a public deployment from transferring its repository
+to the CMP, consuming CMP CPU, or accessing the SOPS key.
 
 After the bootstrap Secret exists, run the reviewed script on the Application
 EC2 as the same operator that administers K3s:
