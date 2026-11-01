@@ -1,0 +1,50 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: courier-public
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/conversa`)
+      priority: 100
+      middlewares:
+        - name: strip-conversa-prefix
+      services:
+        - name: conversa-app
+          port: 80
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/flikk`)
+      priority: 100
+      middlewares:
+        - name: strip-flikk-prefix
+      services:
+        - name: flikk-app
+          port: 80
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/api/user`)
+      priority: 200
+      middlewares:
+        - name: strip-user-api-prefix
+      services:
+        - name: user-service
+          port: 5001
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/api/chat`)
+      priority: 200
+      middlewares:
+        - name: strip-chat-api-prefix
+      services:
+        - name: chat-service
+          port: 5002
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/api/payment`)
+      priority: 200
+      middlewares:
+        - name: strip-payment-api-prefix
+      services:
+        - name: payment-gateway
+          port: 5003
+  tls:
+    certResolver: letsencrypt

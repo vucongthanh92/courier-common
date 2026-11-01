@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conversa-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conversa-app
+  template:
+    metadata:
+      labels:
+        app: conversa-app
+    spec:
+      containers:
+        - name: conversa-app
+          image: ghcr.io/vucongthanh92/courier/conversa-app:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 150m
+              memory: 128Mi

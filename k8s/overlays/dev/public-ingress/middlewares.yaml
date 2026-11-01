@@ -1,0 +1,44 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-conversa-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /conversa
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-flikk-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /flikk
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-user-api-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/user
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-chat-api-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/chat
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-payment-api-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/payment

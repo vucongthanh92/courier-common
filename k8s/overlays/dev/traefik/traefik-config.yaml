@@ -1,0 +1,39 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    # K3s runs a single Application node. Host ports make Traefik the sole
+    # public listener without relying on ServiceLB or an AWS load balancer.
+    service:
+      type: ClusterIP
+    ports:
+      web:
+        hostPort: 80
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
+      websecure:
+        hostPort: 443
+    persistence:
+      enabled: true
+      size: 128Mi
+    certificatesResolvers:
+      letsencrypt:
+        acme:
+          email: vucongthanh92@gmail.com
+          storage: /data/acme.json
+          httpChallenge:
+            entryPoint: web
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
