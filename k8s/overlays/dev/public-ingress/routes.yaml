@@ -7,6 +7,14 @@ spec:
     - websecure
   routes:
     - kind: Rule
+      match: Host(`courier.io.vn`) && Path(`/`)
+      priority: 300
+      middlewares:
+        - name: redirect-root-to-conversa
+      services:
+        - name: conversa-app
+          port: 80
+    - kind: Rule
       match: Host(`courier.io.vn`) && PathPrefix(`/conversa`)
       priority: 100
       middlewares:
