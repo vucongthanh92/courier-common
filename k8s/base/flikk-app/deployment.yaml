@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flikk-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flikk-app
+  template:
+    metadata:
+      labels:
+        app: flikk-app
+    spec:
+      containers:
+        - name: flikk-app
+          image: ghcr.io/vucongthanh92/courier/flikk-app:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 150m
+              memory: 128Mi
