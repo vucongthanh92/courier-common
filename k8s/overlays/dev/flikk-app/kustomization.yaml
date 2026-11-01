@@ -9,4 +9,4 @@ images:
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/flikk-app
     # This bootstrap tag is replaced by the immutable image-release PR when
     # courier-flikk-app next merges to main.
-    newTag: sha-126d78b0e9085d23d4c348959a0efa3960917841
+    newTag: sha-283a011d9d10f911f39b6e7bb7337961b9a9942c
