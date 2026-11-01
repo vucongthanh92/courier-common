@@ -18,6 +18,14 @@ resource "aws_security_group" "application" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Public HTTP for ACME validation and HTTPS redirect"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     description = "Outbound package, image, and AWS API access"
     from_port   = 0
@@ -29,6 +37,19 @@ resource "aws_security_group" "application" {
   tags = {
     Name = "${local.name_prefix}-application"
   }
+}
+
+resource "aws_eip" "application" {
+  domain = "vpc"
+
+  tags = {
+    Name = "${local.name_prefix}-application-ingress"
+  }
+}
+
+resource "aws_eip_association" "application" {
+  allocation_id = aws_eip.application.id
+  instance_id   = aws_instance.application.id
 }
 
 resource "aws_security_group" "data" {
@@ -296,10 +317,14 @@ resource "aws_instance" "application" {
   })
   user_data_replace_on_change = true
 
-  # See the matching Data EC2 lifecycle rule above. K3s/Argo CD state on this
-  # node also makes an implicit AMI-driven replacement unsafe.
+  # K3s/Argo CD state on this node makes an implicit replacement unsafe. Cloud
+  # init user data only runs on first boot, so a later bootstrap change must be
+  # applied through a reviewed SSM runbook instead of recreating this node.
   lifecycle {
-    ignore_changes = [ami]
+    ignore_changes = [
+      ami,
+      user_data,
+    ]
   }
 
   root_block_device {
