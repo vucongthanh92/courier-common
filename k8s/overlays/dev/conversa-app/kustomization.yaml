@@ -9,4 +9,4 @@ images:
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/conversa-app
     # This bootstrap tag is replaced by the immutable image-release PR when
     # courier-conversa-app next merges to main.
-    newTag: sha-a04fa19829910bd18d2923a75c676351ba676a83
+    newTag: sha-1aebe5269ce2e52f01aa17fa5ee5fda87b9d8316
