@@ -11,13 +11,9 @@ data:
       name: ksops
     spec:
       discover:
-        find:
-          command:
-            - /usr/local/bin/kustomize
-            - build
-            - --enable-alpha-plugins
-            - --enable-exec
-            - .
+        # Only hand encrypted overlays to KSOPS. The former discovery command
+        # built every Kustomize Application, including public applications.
+        fileName: ksops-generator.yaml
       generate:
         command:
           - /usr/local/bin/kustomize

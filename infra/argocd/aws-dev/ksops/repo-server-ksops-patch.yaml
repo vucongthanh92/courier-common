@@ -7,6 +7,14 @@ spec:
   template:
     spec:
       containers:
+        - name: argocd-repo-server
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 750m
+              memory: 768Mi
         - name: ksops
           image: viaductoss/ksops:v4.5.1
           command:
@@ -14,6 +22,13 @@ spec:
           env:
             - name: SOPS_AGE_KEY_FILE
               value: /home/argocd/.config/sops/age/keys.txt
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
