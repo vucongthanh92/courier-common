@@ -4,3 +4,6 @@ metadata:
   name: chat-service-config
 data:
   APP_ENV: dev
+  # Comma-separated browser origins. This is intentionally non-secret runtime
+  # configuration and is merged with each service's file-based allow-list.
+  COURIER_PUBLIC_ORIGINS: https://courier.io.vn
