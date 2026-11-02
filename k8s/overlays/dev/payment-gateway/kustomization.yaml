@@ -5,6 +5,8 @@ kind: Kustomization
 
 resources:
   - ../../../base/payment-gateway
+  - ../../../../shared/migrations/payment-gateway
+  - migration-job.yaml
 
 generators:
   - ksops-generator.yaml

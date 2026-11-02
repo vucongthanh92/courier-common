@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: chat-service-migration
+    annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+type: Opaque
+stringData:
+    postgres-password: ENC[AES256_GCM,data:qv9vw7+OVsUWEwL/GrdJesZu8AYt9CEev0rcv2IPk39iQC9KsNIoYylcH/lY+yOVF0XrKBWve1vOUWhvDMMOvg==,iv:BJ1XHWcqzwEg81+FSdT+J/6bCM5Wrbx1SSgXiZDM1f4=,tag:lqAMIrrgmm3GplEILin6pg==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAyU0JTellLWGQxbTRaSXN1
+            aDFoSExZMkgxWVFtV2dCRnlJL1J6bzEyNVJrCjZiL2JYZ3g5UnprNEdITWRGNVdx
+            ZUhKekQzMFJvVG4rSWdwU1o0U05XVjAKLS0tIFU0QzVObjcxN1k0SE9YdHBObWY2
+            L0YwaG1Fb09qd3hNYUd2NUgrRG5YMXcKB/b9I2rE8ALfvkQnVwtfSMMPPDiUEy4t
+            IU6LayVM+dNcr6i037YYCaal4guMFtBzLeI0JLDh/6qLiwfns7Cn9Q==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1gp9hfgqxdz2g3r7w0l3pufy7mt62gtp5g22jcyj7nuc0euwvfyhsfgpduu
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-02T13:06:43Z"
+    mac: ENC[AES256_GCM,data:lvJWiIGx9fuYq1bt1DAZm59OqGPc8qce+eZ0nqWSKSIqgGOeuibOMjKaEAUqJ9MZDDD0zv5Ap3YXpuWSb91GGKqdbU8o6nWVxZfpBACylg/pPBvKTAsJ5eH4jW0Ebb6FrbXnd0aUXf1qoGs8LSSW4IuC36c/nq6L9IdSLsk3HWA=,iv:wFn1WMFzRq8cW9+kzmOkGqSDH6Cizlmkd2E8tZQM/NQ=,tag:01w3kk+v9AcEnLZIjtb+FA==,type:str]
+    version: 3.13.3

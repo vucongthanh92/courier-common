@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: payment-gateway-migrate
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: postgres:16.15-alpine3.24
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGHOST
+              value: postgresql
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: payment_gateway
+            - name: PGUSER
+              value: courier_app
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: payment-gateway-migration
+                  key: postgres-password
+            - name: PGSSLMODE
+              value: disable
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              psql --set ON_ERROR_STOP=1 --command '
+                CREATE TABLE IF NOT EXISTS public.courier_schema_migrations (
+                  service_name TEXT NOT NULL,
+                  filename TEXT NOT NULL,
+                  applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                  PRIMARY KEY (service_name, filename)
+                )
+              '
+              for migration in /migrations/*.up.sql; do
+                filename="$(basename "${migration}")"
+                if psql --tuples-only --no-align --command \
+                  "SELECT 1 FROM public.courier_schema_migrations WHERE service_name = 'payment-gateway' AND filename = '${filename}'" | grep -qx '1'; then
+                  echo "Skipping already applied ${migration}"
+                  continue
+                fi
+                echo "Applying ${migration}"
+                psql --set ON_ERROR_STOP=1 --single-transaction --file "${migration}"
+                psql --set ON_ERROR_STOP=1 --command \
+                  "INSERT INTO public.courier_schema_migrations (service_name, filename) VALUES ('payment-gateway', '${filename}')"
+              done
+          volumeMounts:
+            - name: migrations
+              mountPath: /migrations
+              readOnly: true
+      volumes:
+        - name: migrations
+          configMap:
+            name: payment-gateway-migrations

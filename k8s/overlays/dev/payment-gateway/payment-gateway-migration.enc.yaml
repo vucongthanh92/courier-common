@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: payment-gateway-migration
+    annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+type: Opaque
+stringData:
+    postgres-password: ENC[AES256_GCM,data:n8BOj+RYxRXLYEJWykc1ut+13Xv+oOJoHlgH467qO24Br5o0cXD9xSbAvJPwGWsWInQgZHaCpheFTOPQwWjxxA==,iv:mPK2ykuORr4mhhGKflPmjJuY15B3foMYP3pAiO+JhOE=,tag:o2JaQlwgDE/dCZ+hxGVgkw==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB5LzRzSWtna3hSNUdoNXNT
+            UzJ1ekxiUWNLZy9XL0VPanZPSjNNd1JsOTJrCkhmUkRXa2RsVElRbkVYMlp3NGxC
+            c3Nzajl1WGx3ODZHZjByT0VIWEZmZ3MKLS0tIGpiSlhoaEdnWFZqR3hyQ0hQSU91
+            WVFRTjcxZDdoK2hWQ29QMGpQb002NGsKYzSXtxGt8AJxyuhl5ft88yeYJ8pjk+ba
+            lADjamHWato5U5JrM+DraTp9ad7QAJRG7hCCUQY4uL57DwA0FgpUEg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1gp9hfgqxdz2g3r7w0l3pufy7mt62gtp5g22jcyj7nuc0euwvfyhsfgpduu
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-02T13:06:43Z"
+    mac: ENC[AES256_GCM,data:/AAwkGJCFyh0pv1mAMGAQUApVGxFb3EoVG9xlh8IpRofC1Z6FUWv2XLc4nl1NSXoh+JFvS9tFiw1sonGuAqDfPqX+WDXaFQadxIVuk1uCPwm7aRddknDSVVCRTbRJK9K7+XXbwNuZrq1gM7w4CWC20Zsc7BDx7LCGrhBRqLtHq8=,iv:maRY1Y9sOYxFs2p/5Yaq/OcekXrPqHqr93zEBSdHDwA=,tag:mKoqfnKjnbvUxHbCsG8z1A==,type:str]
+    version: 3.13.3

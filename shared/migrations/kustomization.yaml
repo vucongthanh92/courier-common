@@ -24,3 +24,4 @@ configMapGenerator:
       - 013_create_outbox.up.sql
       - 014_add_outbox_notify_trigger.up.sql
       - 015_seed_dev_jwk_key.up.sql
+      - user-service/020_create_user_service_sso.up.sql

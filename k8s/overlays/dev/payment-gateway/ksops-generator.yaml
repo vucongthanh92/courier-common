@@ -8,3 +8,4 @@ metadata:
         path: ksops
 files:
   - payment-gateway-config.enc.yaml
+  - payment-gateway-migration.enc.yaml
