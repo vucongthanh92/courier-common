@@ -52,3 +52,12 @@ spec:
   stripPrefix:
     prefixes:
       - /api/payment
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: kafka-admin-basic-auth
+spec:
+  basicAuth:
+    secret: kafka-admin-basic-auth
+    removeHeader: true

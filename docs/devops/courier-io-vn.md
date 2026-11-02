@@ -10,7 +10,10 @@ the two static frontend paths:
 
 The Application EC2 is the only internet-facing node. Argo CD, Grafana,
 PostgreSQL, Redis, Kafka, and Qdrant remain private and are accessed through
-controlled SSM tunnels where required.
+controlled SSM tunnels where required. A purpose-built operational UI may be
+published below `/admin/` only through Traefik HTTPS authentication; this does
+not expose a raw data-service protocol. Kafka UI is the first such route at
+`/admin/kafka`.
 
 ## Stable address
 

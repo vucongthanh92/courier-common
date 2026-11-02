@@ -21,9 +21,26 @@ The Compose memory ceilings total 3,072 MiB: PostgreSQL 768 MiB, Redis 256 MiB,
 Kafka 1,280 MiB, and Qdrant 768 MiB. This leaves about 1 GiB for Amazon Linux,
 Docker, filesystem cache, and bursts on the 4 GiB `t4g.medium` Data EC2.
 
+Kafka UI deliberately runs on the Application EC2 Kubernetes node rather than
+this Data EC2. It reaches the broker through the private `kafka:9092` service
+and is routed through Traefik with authentication. This preserves the Data
+EC2's limited memory for stateful workloads.
+
 This is a **decision pending measurement**, not a verified runtime result.
 Kafka is the largest risk; do not increase a ceiling without recording EC2
 memory, CPU, disk growth, and consumer lag under an actual Courier workload.
+
+## Kafka topic bootstrap
+
+`courier-data.service` starts only persistent containers. After Kafka reports
+healthy, its `ExecStartPost` runs `initialize-kafka-topics.sh`, which invokes
+the one-shot `kafka-init` Compose service. Topic creation is idempotent via
+`--if-not-exists`, so every service restart also repairs missing declared
+topics without deleting messages or changing existing topic settings.
+
+Declared topics live in `topics.json`. Add a reviewed topic there before a
+service publishes or consumes it; do not rely on Kafka automatic topic
+creation, which is intentionally disabled.
 
 ## First provision after Terraform applies the IAM policy
 

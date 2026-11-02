@@ -16,6 +16,8 @@ install --owner root --group root --mode 0755 \
   "${install_root}/scripts/hydrate-data-env.sh" "${library_root}/hydrate-data-env.sh"
 install --owner root --group root --mode 0755 \
   "${install_root}/scripts/backup-postgres.sh" "${library_root}/backup-postgres.sh"
+install --owner root --group root --mode 0755 \
+  "${install_root}/scripts/initialize-kafka-topics.sh" "${library_root}/initialize-kafka-topics.sh"
 install --owner root --group root --mode 0644 \
   "${install_root}/systemd/courier-data.service" /etc/systemd/system/courier-data.service
 install --owner root --group root --mode 0644 \
@@ -32,6 +34,6 @@ systemctl daemon-reload
 systemctl enable courier-data.service courier-postgres-backup.timer
 
 if [[ "${1:-}" == "--start" ]]; then
-  systemctl start courier-data.service
+  systemctl restart courier-data.service
   systemctl start courier-postgres-backup.timer
 fi

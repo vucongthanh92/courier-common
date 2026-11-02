@@ -101,6 +101,8 @@ services:
     image: apache/kafka:3.9.0
     container_name: courier-kafka-init
     restart: "no"
+    profiles:
+      - bootstrap
     depends_on:
       kafka:
         condition: service_healthy

@@ -11,6 +11,7 @@ WorkingDirectory=/opt/courier/data-node
 ExecStartPre=/usr/local/lib/courier/hydrate-data-env.sh
 ExecStartPre=/usr/local/bin/docker-compose --env-file /etc/courier/data.env -f /opt/courier/data-node/compose.yaml config --quiet
 ExecStart=/usr/local/bin/docker-compose --env-file /etc/courier/data.env -f /opt/courier/data-node/compose.yaml up --detach --remove-orphans
+ExecStartPost=/usr/local/lib/courier/initialize-kafka-topics.sh
 ExecStop=/usr/local/bin/docker-compose --env-file /etc/courier/data.env -f /opt/courier/data-node/compose.yaml down
 TimeoutStartSec=180
 TimeoutStopSec=90

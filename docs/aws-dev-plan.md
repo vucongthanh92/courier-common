@@ -99,7 +99,7 @@ must not be used as Linux container image sizes.
 | Application cluster | One EC2 K3s server running Argo CD, ingress, API deployments, and frontend static-web deployments | Deliberately non-HA for dev; must recover after reboot |
 | Stateful data | Separate EC2 data node for PostgreSQL, Redis, one Kafka broker, and Qdrant with persistent gp3 volumes | Keeps state off application pods; each single-node service remains a known SPOF |
 | Database decision | PostgreSQL on the data node with external S3 backup and restore verification | Replaces the prior RDS option to fit the USD 50/month target |
-| Ingress | Traefik with cert-manager/one coordinated ACME writer | HTTPS after domain/DNS are approved; internal admin UIs remain private |
+| Ingress | Traefik with cert-manager/one coordinated ACME writer | HTTPS after domain/DNS are approved; raw data-service protocols remain private, while purpose-built admin UIs may use authenticated `/admin/` routes |
 | Delivery | GitHub Actions builds ECR images using OIDC, then opens a GitOps image-update PR; Argo CD syncs merged Git | Immutable SHA/digest tags; no `latest` deployments |
 | Configuration / secrets | Non-secret config in Kustomize ConfigMaps; secrets from an approved secret mechanism | Never commit credentials; frontend values are build-time values |
 | Observability | Prometheus + Grafana first, then logs/traces with bounded retention | Requests/limits and measurements determine the storage budget |
@@ -137,7 +137,7 @@ measurements on EC2 remain required before scaling.
 | Data EC2 | `t4g.medium` (2 vCPU, 4 GiB): PostgreSQL, Redis, one Kafka broker, and Qdrant |
 | EBS | gp3: 25 GiB application root, 25 GiB data root, and 60 GiB data volume (110 GiB total) |
 | Object storage | Two S3 buckets: one for files and one for backups |
-| Public boundary | HTTPS only; databases, data services, Argo CD, and Grafana remain private |
+| Public boundary | HTTPS only; databases, data-service protocols, Argo CD, and Grafana remain private. Purpose-built operational UIs require explicit authentication beneath `/admin/`. |
 | Cost guardrails | AWS Budget alerts at USD 25, 40, and 47; disk-usage alerts at 70% and 85%; short log retention and backup lifecycle transitions |
 
 The current compute estimate is USD 10.18/month for the application node and
