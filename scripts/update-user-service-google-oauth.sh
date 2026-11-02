@@ -7,7 +7,8 @@ set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPOSITORY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-readonly TARGET_FILE="${REPOSITORY_ROOT}/k8s/overlays/dev/user-service/user-service-config.enc.yaml"
+readonly TARGET_RELATIVE_PATH="k8s/overlays/dev/user-service/user-service-config.enc.yaml"
+readonly TARGET_FILE="${REPOSITORY_ROOT}/${TARGET_RELATIVE_PATH}"
 readonly SOPS_CONFIG_FILE="${REPOSITORY_ROOT}/.sops.yaml"
 readonly AWS_REGION="${AWS_REGION:-ap-southeast-2}"
 readonly SOPS_AGE_KEY_PARAMETER="${SOPS_AGE_KEY_PARAMETER:-/courier/dev/argocd/sops-age-key}"
@@ -84,10 +85,7 @@ printf '\n'
 key_file="$(mktemp "${TMPDIR:-/tmp}/courier-sops-age.XXXXXX")"
 plaintext_file="$(mktemp "${TMPDIR:-/tmp}/courier-user-service-config.XXXXXX.yaml")"
 updated_file="$(mktemp "${TMPDIR:-/tmp}/courier-user-service-config-updated.XXXXXX.yaml")"
-# SOPS creation rules are evaluated against paths under the repository's k8s/
-# directory. Keep the encrypted temporary output there and retain the .enc.yaml
-# suffix so it matches .sops.yaml; plaintext files remain only in /tmp.
-encrypted_file="$(mktemp "$(dirname "${TARGET_FILE}")/.user-service-config.XXXXXX.enc.yaml")"
+encrypted_file="$(mktemp "${TMPDIR:-/tmp}/courier-user-service-config-encrypted.XXXXXX.yaml")"
 chmod 600 "${key_file}" "${plaintext_file}" "${updated_file}" "${encrypted_file}"
 
 aws ssm get-parameter \
@@ -123,7 +121,9 @@ File.write(output_path, YAML.dump(document))
 RUBY
 
 SOPS_AGE_KEY_FILE="${key_file}" \
-  sops --config "${SOPS_CONFIG_FILE}" --encrypt --input-type yaml --output-type yaml "${updated_file}" > "${encrypted_file}"
+  sops --config "${SOPS_CONFIG_FILE}" \
+    --filename-override "${TARGET_RELATIVE_PATH}" \
+    --encrypt --input-type yaml --output-type yaml "${updated_file}" > "${encrypted_file}"
 
 SOPS_AGE_KEY_FILE="${key_file}" \
   sops --config "${SOPS_CONFIG_FILE}" --decrypt "${encrypted_file}" >/dev/null
