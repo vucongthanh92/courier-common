@@ -12,4 +12,4 @@ generators:
 images:
   - name: ghcr.io/vucongthanh92/courier/chat-service
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/chat-service
-    newTag: sha-58e77327a7821c3a98655ea252a102888ee785c3
+    newTag: sha-1cd70c0a81200be2edb94000a4f76d23e9557436
