@@ -23,6 +23,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: user-service-runtime
+            - secretRef:
+                name: user-service-runtime-secrets
+                optional: true
           ports:
             - name: http
               containerPort: 5001
