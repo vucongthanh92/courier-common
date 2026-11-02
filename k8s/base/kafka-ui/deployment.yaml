@@ -26,6 +26,12 @@ spec:
               value: kafka:9092
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: /admin/kafka
+          startupProbe:
+            httpGet:
+              path: /admin/kafka
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /admin/kafka
