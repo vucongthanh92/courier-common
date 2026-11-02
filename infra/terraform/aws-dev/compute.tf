@@ -190,6 +190,21 @@ resource "aws_iam_role_policy" "application_sops_age_key" {
   })
 }
 
+resource "aws_iam_role_policy" "application_user_service_oauth" {
+  name = "read-user-service-google-oauth"
+  role = aws_iam_role.application.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid      = "ReadUserServiceGoogleOAuth"
+      Effect   = "Allow"
+      Action   = ["ssm:GetParameter"]
+      Resource = [for parameter_name in var.user_service_google_oauth_parameter_names : "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter${parameter_name}"]
+    }]
+  })
+}
+
 resource "aws_iam_role_policy" "data_backups" {
   name = "backup-bucket"
   role = aws_iam_role.data.id

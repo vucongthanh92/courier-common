@@ -16,7 +16,7 @@ COURIER_FRONTEND_APPS ?= conversa-app flikk-app
 COURIER_RUNTIME_DIR ?= .courier
 COURIER_PID_FILE ?= $(COURIER_RUNTIME_DIR)/pids
 
-.PHONY: kind-create kind-delete kind-load-user-service kind-apply-argocd kind-apply-user-service dev-user-up kafka-up kafka-init kafka-topics run-user-service run-chat-service run-agent-gateway run-payment-gateway run-conversa-app run-flikk-app start-courier stop-courier start-argocd start-postgres update-user-service-google-oauth
+.PHONY: kind-create kind-delete kind-load-user-service kind-apply-argocd kind-apply-user-service dev-user-up kafka-up kafka-init kafka-topics run-user-service run-chat-service run-agent-gateway run-payment-gateway run-conversa-app run-flikk-app start-courier stop-courier start-argocd start-postgres update-user-service-google-oauth sync-user-service-oauth
 
 kind-create:
 	kind create cluster --name $(KIND_CLUSTER) --config infra/kind/courier-dev.yaml
@@ -132,3 +132,6 @@ start-postgres:
 
 update-user-service-google-oauth:
 	./scripts/update-user-service-google-oauth.sh
+
+sync-user-service-oauth:
+	@echo "Run scripts/sync-user-service-oauth-from-ssm.sh on the Application EC2 through SSM after Terraform applies the IAM policy."

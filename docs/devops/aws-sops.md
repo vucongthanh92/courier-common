@@ -96,6 +96,23 @@ Review the encrypted diff, commit it on a branch, and open a PR. Once that PR
 is merged, Argo CD applies the updated Secret. Restart `user-service` once so
 its process reloads the mounted configuration.
 
+## Runtime Google OAuth from SSM Parameter Store
+
+AWS dev Google OAuth is being migrated away from SOPS. The Application EC2
+reads the two approved SecureString parameters and creates the Kubernetes
+Secret `user-service-runtime-secrets` without printing values:
+
+```text
+/courier/dev/user-service/oauth/google/client-id
+/courier/dev/user-service/oauth/google/client-secret
+```
+
+After Terraform applies the least-privilege IAM policy, run
+`scripts/sync-user-service-oauth-from-ssm.sh` on the Application EC2 through
+SSM. It refreshes the Secret and performs a rolling restart of `user-service`.
+The SOPS source remains authoritative until the runtime-env cutover is
+explicitly validated.
+
 ## Rotation and recovery
 
 Rotation requires a new age key pair, SSM parameter update, a re-encryption of
