@@ -77,6 +77,25 @@ Each KSOPS generator must declare the KRM exec annotation with `path: ksops`.
 That is the supported KSOPS v4 form and resolves the binary from the sidecar
 PATH; do not use the legacy plugin-root layout.
 
+## Update Google OAuth credentials for user-service
+
+Run the interactive helper from the repository root when the AWS dev Google
+OAuth Web Client changes:
+
+```bash
+make update-user-service-google-oauth
+```
+
+It prompts for the Client ID and a hidden Client Secret, retrieves the age key
+from SSM into a temporary file, updates only `oauth.google` in
+`k8s/overlays/dev/user-service/user-service-config.enc.yaml`, validates that
+the result decrypts, and removes all temporary files before it exits. It does
+not print credential values or create a Git commit.
+
+Review the encrypted diff, commit it on a branch, and open a PR. Once that PR
+is merged, Argo CD applies the updated Secret. Restart `user-service` once so
+its process reloads the mounted configuration.
+
 ## Rotation and recovery
 
 Rotation requires a new age key pair, SSM parameter update, a re-encryption of
