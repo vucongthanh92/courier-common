@@ -190,17 +190,25 @@ resource "aws_iam_role_policy" "application_sops_age_key" {
   })
 }
 
-resource "aws_iam_role_policy" "application_user_service_oauth" {
-  name = "read-user-service-google-oauth"
+resource "aws_iam_role_policy" "application_runtime_parameters" {
+  name = "read-courier-dev-runtime-parameters"
   role = aws_iam_role.application.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Sid      = "ReadUserServiceGoogleOAuth"
-      Effect   = "Allow"
-      Action   = ["ssm:GetParameter"]
-      Resource = [for parameter_name in var.user_service_google_oauth_parameter_names : "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter${parameter_name}"]
+      Sid    = "ReadCourierDevRuntimeParameters"
+      Effect = "Allow"
+      Action = [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath",
+      ]
+      Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter${var.application_runtime_parameter_path_prefix}*"
     }]
   })
 }

@@ -77,41 +77,14 @@ Each KSOPS generator must declare the KRM exec annotation with `path: ksops`.
 That is the supported KSOPS v4 form and resolves the binary from the sidecar
 PATH; do not use the legacy plugin-root layout.
 
-## Update Google OAuth credentials for user-service
+## Runtime configuration migration
 
-Run the interactive helper from the repository root when the AWS dev Google
-OAuth Web Client changes:
-
-```bash
-make update-user-service-google-oauth
-```
-
-It prompts for the Client ID and a hidden Client Secret, retrieves the age key
-from SSM into a temporary file, updates only `oauth.google` in
-`k8s/overlays/dev/user-service/user-service-config.enc.yaml`, validates that
-the result decrypts, and removes all temporary files before it exits. It does
-not print credential values or create a Git commit.
-
-Review the encrypted diff, commit it on a branch, and open a PR. Once that PR
-is merged, Argo CD applies the updated Secret. Restart `user-service` once so
-its process reloads the mounted configuration.
-
-## Runtime Google OAuth from SSM Parameter Store
-
-AWS dev Google OAuth is being migrated away from SOPS. The Application EC2
-reads the two approved SecureString parameters and creates the Kubernetes
-Secret `user-service-runtime-secrets` without printing values:
-
-```text
-/courier/dev/user-service/oauth/google/client-id
-/courier/dev/user-service/oauth/google/client-secret
-```
-
-After Terraform applies the least-privilege IAM policy, run
-`scripts/sync-user-service-oauth-from-ssm.sh` on the Application EC2 through
-SSM. It refreshes the Secret and performs a rolling restart of `user-service`.
-The SOPS source remains authoritative until the runtime-env cutover is
-explicitly validated.
+Google OAuth credentials and SSO client registration now use the standard AWS
+Parameter Store runtime path and are synchronized by External Secrets Operator.
+The initial migration retains SOPS only for the remaining encrypted base config
+and bootstrap secrets. See
+[AWS Parameter Store Runtime Configuration](aws-parameter-store-runtime-config.md)
+for the path convention and update commands.
 
 ## Rotation and recovery
 

@@ -1,0 +1,11 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: courier-parameter-store
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+spec:
+  provider:
+    aws:
+      service: ParameterStore
+      region: ap-southeast-2

@@ -16,6 +16,9 @@ Run from the repository root.
 | `make dev-user-up` | Build/load user-service and apply local Argo CD resources. |
 | `make start-argocd` | Port-forward Argo CD server to `https://localhost:8080`. |
 | `make start-postgres` | Open private PostgreSQL SSM tunnels: `user_service` on `127.0.0.1:15432`, `chat_service` on `:15433`, and `payment_gateway` on `:15434`. |
+| `make configure-user-service-sso-runtime` | Create/update non-secret user-service SSO runtime parameters in AWS Parameter Store. |
+| `make migrate-user-service-oauth-runtime` | Copy existing Google OAuth SecureStrings into the standard user-service runtime prefix without printing them. |
+| `make update-user-service-google-oauth` | Interactively update Google OAuth credentials in the standard runtime prefix. |
 
 ## user-service Commands
 

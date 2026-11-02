@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-sso-overlay
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+data:
+  sso.yaml: |
+    sso:
+      login_url: "${SSO_LOGIN_URL}"
+      clients:
+        - client_id: "${SSO_CONVERSA_CLIENT_ID}"
+          name: Conversa Web
+          redirect_uris:
+            - "${SSO_CONVERSA_REDIRECT_URI}"
+          scopes:
+            - openid
+            - profile
+            - email
+        - client_id: "${SSO_FLIKK_CLIENT_ID}"
+          name: Flikk Web
+          redirect_uris:
+            - "${SSO_FLIKK_REDIRECT_URI}"
+          scopes:
+            - openid
+            - profile
+            - email
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: user-service-runtime
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  refreshPolicy: Periodic
+  refreshInterval: 15m
+  secretStoreRef:
+    kind: SecretStore
+    name: courier-parameter-store
+  target:
+    name: user-service-runtime-secrets
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  dataFrom:
+    - find:
+        path: /courier/dev/user-service/runtime
+        name:
+          regexp: ".*"
+      rewrite:
+        - regexp:
+            source: ".*/([^/]+)$"
+            target: "$1"
