@@ -19,6 +19,7 @@ Run from the repository root.
 | `make configure-user-service-sso-runtime` | Create/update non-secret user-service SSO runtime parameters in AWS Parameter Store. |
 | `make migrate-user-service-oauth-runtime` | Copy existing Google OAuth SecureStrings into the standard user-service runtime prefix without printing them. |
 | `make update-user-service-google-oauth` | Interactively update Google OAuth credentials in the standard runtime prefix. |
+| `make update-kafka-admin-basic-auth` | Create or rotate the AWS Parameter Store credential for `https://courier.io.vn/admin/kafka`; it never prints the password or hash. |
 
 ## user-service Commands
 

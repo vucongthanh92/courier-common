@@ -54,5 +54,13 @@ spec:
       services:
         - name: payment-gateway
           port: 5003
+    - kind: Rule
+      match: Host(`courier.io.vn`) && PathPrefix(`/admin/kafka`)
+      priority: 250
+      middlewares:
+        - name: kafka-admin-basic-auth
+      services:
+        - name: kafka-ui
+          port: 80
   tls:
     certResolver: letsencrypt

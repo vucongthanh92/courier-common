@@ -30,6 +30,7 @@ Examples:
 /courier/dev/user-service/runtime/SSO_CONVERSA_REDIRECT_URI
 /courier/dev/user-service/runtime/OAUTH_GOOGLE_CLIENT_SECRET
 /courier/dev/chat-service/runtime/COURIER_PUBLIC_ORIGINS
+/courier/dev/admin-kafka/runtime/BASIC_AUTH_USERS
 ```
 
 Use upper-snake-case for `<ENV_VAR_NAME>`, even for a value consumed only by a
@@ -40,6 +41,33 @@ Use `String` for non-sensitive values such as URLs, feature flags, client IDs,
 and public origins. Use `SecureString` for passwords, private keys, OAuth
 client secrets, API keys, and tokens. Do not store a secret in a ConfigMap or
 commit it to Git.
+
+## Protected operational dashboards
+
+`/admin/` is reserved for protected operational UIs. The first route is Kafka
+UI at `https://courier.io.vn/admin/kafka`. Its Basic Auth credential is stored
+as an Apache `htpasswd` bcrypt line in this SecureString:
+
+```text
+/courier/dev/admin-kafka/runtime/BASIC_AUTH_USERS
+```
+
+Create or rotate it from a workstation without displaying the password or
+hash:
+
+```bash
+AWS_PROFILE=courier-terraform make update-kafka-admin-basic-auth
+```
+
+External Secrets Operator mirrors the parameter into the `users` key of the
+`kafka-admin-basic-auth` Kubernetes Secret. Traefik reads that Secret before it
+forwards the request. The Kafka broker remains private; this route does not
+open port 9092 to the Internet.
+
+Future observability UIs can use a child route below `/admin/` and the same
+reverse-proxy/authentication boundary. Do not publish a raw Redis, PostgreSQL,
+or Kafka protocol endpoint through `/admin/`; expose only a purpose-built UI
+with explicit authentication and a least-privilege backend connection.
 
 ## Synchronization model
 

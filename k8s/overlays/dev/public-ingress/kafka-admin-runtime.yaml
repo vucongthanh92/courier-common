@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kafka-admin-basic-auth
+spec:
+  refreshPolicy: Periodic
+  refreshInterval: 15m
+  secretStoreRef:
+    kind: SecretStore
+    name: courier-parameter-store
+  target:
+    name: kafka-admin-basic-auth
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: users
+      remoteRef:
+        key: /courier/dev/admin-kafka/runtime/BASIC_AUTH_USERS
