@@ -13,7 +13,38 @@ spec:
     metadata:
       labels:
         app: user-service
+      annotations:
+        reloader.stakater.com/auto: "true"
     spec:
+      initContainers:
+        - name: render-runtime-config
+          image: mikefarah/yq:4.45.1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              yq '(.. | select(tag == "!!str")) |= envsubst(nu,ne,ff)' /sso-overlay/sso.yaml > /rendered/sso.yaml
+              yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' /config-template/config.yaml /rendered/sso.yaml > /rendered/config.yaml
+              test -s /rendered/config.yaml
+          envFrom:
+            - secretRef:
+                name: user-service-runtime-secrets
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: sso-overlay
+              mountPath: /sso-overlay
+              readOnly: true
+            - name: rendered-config
+              mountPath: /rendered
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
       containers:
         - name: user-service
           image: ghcr.io/vucongthanh92/courier/user-service:dev
@@ -36,7 +67,7 @@ spec:
             - name: metrics
               containerPort: 8001
           volumeMounts:
-            - name: config
+            - name: rendered-config
               mountPath: /app/config/dev/config.yaml
               subPath: config.yaml
               readOnly: true
@@ -59,6 +90,11 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
       volumes:
-        - name: config
+        - name: config-template
           secret:
             secretName: user-service-config
+        - name: sso-overlay
+          configMap:
+            name: user-service-sso-overlay
+        - name: rendered-config
+          emptyDir: {}

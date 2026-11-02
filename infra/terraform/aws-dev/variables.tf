@@ -75,13 +75,10 @@ variable "sops_age_parameter_name" {
   default     = "/courier/dev/argocd/sops-age-key"
 }
 
-variable "user_service_google_oauth_parameter_names" {
-  description = "Exact SSM SecureString parameters the Application EC2 may read to synchronize user-service Google OAuth runtime credentials."
-  type        = set(string)
-  default = [
-    "/courier/dev/user-service/oauth/google/client-id",
-    "/courier/dev/user-service/oauth/google/client-secret",
-  ]
+variable "application_runtime_parameter_path_prefix" {
+  description = "SSM Parameter Store prefix containing Courier development runtime configuration that K3s workloads may synchronize through External Secrets Operator."
+  type        = string
+  default     = "/courier/dev/"
 }
 
 variable "github_owner" {

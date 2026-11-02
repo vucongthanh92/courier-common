@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: runtime-config-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/vucongthanh92/courier.git
+    targetRevision: main
+    path: k8s/overlays/dev/runtime-config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: courier-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

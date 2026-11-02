@@ -105,6 +105,24 @@ must not be used as Linux container image sizes.
 | Observability | Prometheus + Grafana first, then logs/traces with bounded retention | Requests/limits and measurements determine the storage budget |
 | Backup | EBS/S3 and database backup, with restore drills | A volume is not a backup |
 
+### Runtime configuration standard (approved; rollout pending)
+
+AWS Systems Manager Parameter Store is the operational source of development
+runtime configuration. The shared naming contract is:
+
+```text
+/courier/<environment>/<service>/runtime/<ENV_VAR_NAME>
+```
+
+External Secrets Operator (ESO) mirrors each service prefix into a
+service-scoped Kubernetes Secret; a small init container renders nested YAML
+where environment variables cannot represent arrays or maps; Reloader rolls
+the workload after a synchronized Secret changes. The Application EC2 role is
+restricted to `/courier/dev/*`; a production environment must use a separate
+role and prefix. SOPS remains only for bootstrap and not-yet-migrated base
+configuration during the transition. See
+[AWS Parameter Store Runtime Configuration](devops/aws-parameter-store-runtime-config.md).
+
 ### P2 sizing and cost decisions (2026-10-16)
 
 The following decisions are agreed for the initial development environment.
