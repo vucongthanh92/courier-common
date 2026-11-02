@@ -15,7 +15,7 @@ Run from the repository root.
 | `make kind-apply-user-service` | Apply the Argo CD user-service app manifest. |
 | `make dev-user-up` | Build/load user-service and apply local Argo CD resources. |
 | `make start-argocd` | Port-forward Argo CD server to `https://localhost:8080`. |
-| `make start-postgres` | Port-forward private PostgreSQL to `127.0.0.1:15432` through AWS SSM. |
+| `make start-postgres` | Open private PostgreSQL SSM tunnels: `user_service` on `127.0.0.1:15432`, `chat_service` on `:15433`, and `payment_gateway` on `:15434`. |
 
 ## user-service Commands
 
