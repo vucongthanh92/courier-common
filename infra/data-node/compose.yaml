@@ -112,8 +112,9 @@ services:
     volumes:
       - ./topics.json:/etc/courier/topics.json:ro
       - ./scripts/create-kafka-topics.sh:/usr/local/bin/create-kafka-topics.sh:ro
-    entrypoint: ["/bin/bash", "-c"]
-    command: bash /usr/local/bin/create-kafka-topics.sh
+    entrypoint: ["/bin/bash"]
+    command:
+      - /usr/local/bin/create-kafka-topics.sh
 
   qdrant:
     image: qdrant/qdrant:v1.12.6

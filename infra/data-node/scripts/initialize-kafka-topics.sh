@@ -16,6 +16,7 @@ for attempt in $(seq 1 "${maximum_attempts}"); do
     exec "${compose_bin}" \
       --env-file "${env_file}" \
       -f "${compose_file}" \
+      --profile bootstrap \
       run --rm kafka-init
   fi
 
