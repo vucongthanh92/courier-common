@@ -5,6 +5,8 @@ kind: Kustomization
 
 resources:
   - ../../../base/chat-service
+  - ../../../../shared/migrations/chat-service
+  - migration-job.yaml
 
 generators:
   - ksops-generator.yaml

@@ -39,7 +39,3 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-ALTER TABLE "chat-service".messages
-    ADD CONSTRAINT fk_messages_sender
-        FOREIGN KEY (sender_id) REFERENCES "user-service".users(id);

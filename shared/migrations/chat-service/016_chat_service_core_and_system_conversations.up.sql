@@ -117,32 +117,12 @@ DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_constraint
-        WHERE conname = 'fk_conversations_created_by'
-          AND conrelid = '"chat-service".conversations'::regclass
-    ) THEN
-        ALTER TABLE "chat-service".conversations
-            ADD CONSTRAINT fk_conversations_created_by
-                FOREIGN KEY (created_by) REFERENCES "user-service".users(id);
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint
         WHERE conname = 'fk_conversation_members_conversation'
           AND conrelid = '"chat-service".conversation_members'::regclass
     ) THEN
         ALTER TABLE "chat-service".conversation_members
             ADD CONSTRAINT fk_conversation_members_conversation
                 FOREIGN KEY (conversation_id) REFERENCES "chat-service".conversations(id) ON DELETE CASCADE;
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint
-        WHERE conname = 'fk_conversation_members_user'
-          AND conrelid = '"chat-service".conversation_members'::regclass
-    ) THEN
-        ALTER TABLE "chat-service".conversation_members
-            ADD CONSTRAINT fk_conversation_members_user
-                FOREIGN KEY (user_id) REFERENCES "user-service".users(id);
     END IF;
 
     IF NOT EXISTS (
@@ -343,14 +323,6 @@ BEGIN
     ELSE
         IF NOT EXISTS (
             SELECT 1
-            FROM "user-service".users u
-            WHERE u.id = NEW.sender_id
-        ) THEN
-            RAISE EXCEPTION 'sender % does not exist', NEW.sender_id;
-        END IF;
-
-        IF NOT EXISTS (
-            SELECT 1
             FROM "chat-service".conversation_members cm
             WHERE cm.conversation_id = NEW.conversation_id
               AND cm.user_id = NEW.sender_id
@@ -398,63 +370,5 @@ AFTER INSERT ON "chat-service".messages
 FOR EACH ROW
 EXECUTE FUNCTION "chat-service".sync_conversation_last_message();
 
-WITH verified_users AS (
-    SELECT id
-    FROM "user-service".users
-    WHERE status = 'verified'
-),
-system_names AS (
-    SELECT name
-    FROM (VALUES ('notification'), ('assistant')) AS names(name)
-),
-missing_conversations AS (
-    SELECT
-        vu.id AS user_id,
-        sn.name
-    FROM verified_users vu
-    CROSS JOIN system_names sn
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM "chat-service".conversations c
-        WHERE c.created_by = vu.id
-          AND c.name = sn.name
-          AND c.type = 'system'
-          AND c.deleted_at IS NULL
-    )
-),
-inserted_conversations AS (
-    INSERT INTO "chat-service".conversations (
-        id,
-        type,
-        direct_key,
-        name,
-        created_by,
-        metadata
-    )
-    SELECT
-        (((EXTRACT(EPOCH FROM clock_timestamp()) * 1000)::BIGINT - 1704067200000) << 12)
-            + (nextval('"chat-service".system_chat_id_seq') % 4096),
-        'system',
-        encode(digest('system:' || user_id::text || ':' || name, 'sha256'), 'hex'),
-        name,
-        user_id,
-        '{}'::jsonb
-    FROM missing_conversations
-    RETURNING id, created_by
-)
-INSERT INTO "chat-service".conversation_members (
-    id,
-    conversation_id,
-    user_id,
-    role,
-    status
-)
-SELECT
-    (((EXTRACT(EPOCH FROM clock_timestamp()) * 1000)::BIGINT - 1704067200000) << 12)
-        + (nextval('"chat-service".system_chat_id_seq') % 4096),
-    ic.id,
-    ic.created_by,
-    'owner',
-    'active'
-FROM inserted_conversations ic
-ON CONFLICT (conversation_id, user_id) DO NOTHING;
+-- System conversations are created from user lifecycle events. Keeping this
+-- migration local to chat-service avoids cross-database reads of user-service.
