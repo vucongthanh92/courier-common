@@ -32,7 +32,7 @@
       "const": "user-service"
     },
     "aggregate_type": {
-      "const": "user"
+      "const": "user_verified_success"
     },
     "aggregate_id": {
       "type": "string",

@@ -1,19 +1,19 @@
 {
   "topics": [
     {
-      "name": "courier.user.events.v1",
+      "name": "courier.user.email-verified.v1",
       "partitions": 3,
       "replicationFactor": 1,
-      "description": "User lifecycle integration events."
+      "description": "User email-verification integration events."
     },
     {
-      "name": "courier.user.events.retry.v1",
+      "name": "courier.user.email-verified.retry.v1",
       "partitions": 3,
       "replicationFactor": 1,
       "description": "Retry topic for user lifecycle integration events."
     },
     {
-      "name": "courier.user.events.dlq.v1",
+      "name": "courier.user.email-verified.dlq.v1",
       "partitions": 3,
       "replicationFactor": 1,
       "description": "Dead-letter topic for user lifecycle integration events."

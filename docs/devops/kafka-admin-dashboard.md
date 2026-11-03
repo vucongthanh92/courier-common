@@ -86,3 +86,8 @@ Kafka automatic topic creation remains disabled. The Data EC2
 using `infra/data-node/topics.json` as the desired topic list. This repairs a
 missing declared topic but does not modify an already-created topic's
 partitions, replication factor, retention, or message data.
+
+Courier uses event-specific topics for cross-service events. For example,
+`user.email_verified.v1` is published only to
+`courier.user.email-verified.v1`; consumers do not need to filter unrelated
+user events from a shared user-topic stream.
