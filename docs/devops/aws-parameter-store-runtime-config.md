@@ -69,6 +69,24 @@ reverse-proxy/authentication boundary. Do not publish a raw Redis, PostgreSQL,
 or Kafka protocol endpoint through `/admin/`; expose only a purpose-built UI
 with explicit authentication and a least-privilege backend connection.
 
+Argo CD uses a separate Basic Auth credential because access to GitOps and
+cluster operations is more privileged than Kafka inspection:
+
+```text
+/courier/dev/admin-argocd/runtime/BASIC_AUTH_USERS
+```
+
+Create or rotate it without printing its value:
+
+```bash
+AWS_PROFILE=courier-terraform make update-argocd-admin-basic-auth
+```
+
+The `argocd-dashboard-dev` Application mirrors this parameter into the
+`argocd-admin-basic-auth` Secret in the `argocd` namespace. Traefik uses it
+before forwarding `https://courier.io.vn/admin/argocd` to the private
+`argocd-server` Service. Argo CD's own login remains a second layer.
+
 ## Synchronization model
 
 ```text
