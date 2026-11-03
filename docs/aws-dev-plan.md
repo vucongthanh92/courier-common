@@ -137,7 +137,7 @@ measurements on EC2 remain required before scaling.
 | Data EC2 | `t4g.medium` (2 vCPU, 4 GiB): PostgreSQL, Redis, one Kafka broker, and Qdrant |
 | EBS | gp3: 25 GiB application root, 25 GiB data root, and 60 GiB data volume (110 GiB total) |
 | Object storage | Two S3 buckets: one for files and one for backups |
-| Public boundary | HTTPS only; databases, data-service protocols, Argo CD, and Grafana remain private. Purpose-built operational UIs require explicit authentication beneath `/admin/`. |
+| Public boundary | HTTPS only; databases, data-service protocols, and Grafana remain private. The Argo CD dashboard is available only as the explicitly authenticated operational UI `https://courier.io.vn/admin/argocd`, beneath Traefik Basic Auth and the Argo CD login. |
 | Cost guardrails | AWS Budget alerts at USD 25, 40, and 47; disk-usage alerts at 70% and 85%; short log retention and backup lifecycle transitions |
 
 The current compute estimate is USD 10.18/month for the application node and

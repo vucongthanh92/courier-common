@@ -62,7 +62,7 @@ flowchart TB
 | Thành phần | Nơi sở hữu | Vai trò | Có public không? |
 | --- | --- | --- | --- |
 | Terraform | `courier-common/infra/terraform/aws-dev` | VPC, EC2, EBS, IAM, S3, ECR, alerts và Terraform state | Không |
-| K3s + Argo CD | Application EC2 | Điều phối workload và đồng bộ GitOps | Argo CD private |
+| K3s + Argo CD | Application EC2 | Điều phối workload và đồng bộ GitOps | Dashboard HTTPS bảo vệ tại `/admin/argocd` |
 | Traefik | Application EC2 | Điểm vào HTTP/HTTPS cho ứng dụng | Chỉ HTTPS khi có domain/DNS |
 | Application pods | K3s | user, chat, payment, agent, Conversa, Flikk | Qua Traefik khi cần |
 | Data services | Data EC2 | PostgreSQL, Redis, Kafka, Qdrant | Private trong VPC |
@@ -81,18 +81,20 @@ flowchart LR
   Traefik --> Web[Conversa / Flikk]
   Traefik --> API[Public APIs đã được cho phép]
 
-  Admin[Developer] -->|AWS SSM port forwarding| Argo[Argo CD dashboard]
+  Admin[Developer] -->|HTTPS + Basic Auth + Argo login| Argo[Argo CD dashboard]
   Admin -->|AWS SSM| AppHost[Application EC2]
   AppHost -->|VPC private traffic| Data[Data EC2]
 
-  Private[PostgreSQL · Redis · Kafka · Qdrant\nArgo CD · Grafana]:::private
+  Private[PostgreSQL · Redis · Kafka · Qdrant\nGrafana]:::private
   Data --- Private
 
   classDef private fill:#f8d7da,stroke:#842029,color:#842029;
 ```
 
-Không mở public database, Kafka, Redis, Qdrant, Argo CD hay Grafana. Việc quản
-trị dùng AWS Systems Manager (SSM), vì vậy không cần mở SSH inbound.
+Không mở public database, Kafka, Redis, Qdrant hay Grafana. Argo CD giữ Service
+nội bộ và chỉ được publish qua Traefik HTTPS tại `/admin/argocd`, với Basic Auth
+và đăng nhập Argo CD là hai lớp độc lập. Việc quản trị qua AWS Systems Manager
+(SSM) vẫn không cần mở SSH inbound.
 
 ## 3. Luồng triển khai một service
 
@@ -177,7 +179,7 @@ thành công; “chờ áp dụng” không được xem là đã vận hành ch
 | Terraform remote state | Đã xác minh | S3 state bucket và DynamoDB lock table đã được tạo ở `ap-southeast-2`. |
 | AWS nền tảng | Đã xác minh | VPC, hai EC2 ARM, EBS, ECR repositories, S3 buckets, budget/alert và IAM roles được Terraform quản lý. |
 | K3s | Đã xác minh | Chạy trên Application EC2; pod CIDR và service CIDR tách với VPC CIDR. |
-| Argo CD | Đã xác minh | Cài đặt trên K3s; dashboard private qua SSM tunnel. |
+| Argo CD | Đã xác minh | Cài đặt trên K3s; route HTTPS bảo vệ tại `/admin/argocd` đang chờ merge và bootstrap Application GitOps. |
 | SOPS age key | Đã xác minh | Private key ở SSM SecureString, bootstrap Secret `argocd-sops-age` tồn tại trong namespace `argocd`. |
 | KSOPS source | Đã merge | PR #100 đã thêm sidecar patch, validation manifest và runbook vào `main`. |
 | KSOPS runtime | **Chờ áp dụng** | Kiểm tra Deployment hiện tại cho thấy `argocd-repo-server` chưa có container `ksops`; ConfigMap/plugin và validation Application cũng chưa được apply lên cluster. |
@@ -190,8 +192,8 @@ thành công; “chờ áp dụng” không được xem là đã vận hành ch
 
 1. Start Application EC2 và Data EC2.
 2. Chờ SSM `Online`, K3s node `Ready`, rồi kiểm tra Argo CD pods `Running`.
-3. Khi cần dashboard, tạo SSM port-forward tới port `8080` trên Application
-   EC2 và mở `https://localhost:8080`.
+3. Khi cần dashboard, mở `https://courier.io.vn/admin/argocd` và đăng nhập qua
+   Basic Auth rồi Argo CD. SSM port-forward vẫn là fallback riêng tư.
 4. Làm việc qua PR: source PR trước, rồi GitOps image-update PR.
 
 Không cần mở SSH hay public Argo CD để xem dashboard. Lệnh cụ thể nằm trong

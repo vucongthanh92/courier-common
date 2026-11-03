@@ -16,7 +16,7 @@ COURIER_FRONTEND_APPS ?= conversa-app flikk-app
 COURIER_RUNTIME_DIR ?= .courier
 COURIER_PID_FILE ?= $(COURIER_RUNTIME_DIR)/pids
 
-.PHONY: kind-create kind-delete kind-load-user-service kind-apply-argocd kind-apply-user-service dev-user-up kafka-up kafka-init kafka-topics run-user-service run-chat-service run-agent-gateway run-payment-gateway run-conversa-app run-flikk-app start-courier stop-courier start-argocd start-postgres update-user-service-google-oauth migrate-user-service-oauth-runtime configure-user-service-sso-runtime update-kafka-admin-basic-auth
+.PHONY: kind-create kind-delete kind-load-user-service kind-apply-argocd kind-apply-user-service dev-user-up kafka-up kafka-init kafka-topics run-user-service run-chat-service run-agent-gateway run-payment-gateway run-conversa-app run-flikk-app start-courier stop-courier start-argocd start-postgres update-user-service-google-oauth migrate-user-service-oauth-runtime configure-user-service-sso-runtime update-kafka-admin-basic-auth update-argocd-admin-basic-auth enable-argocd-public-dashboard
 
 kind-create:
 	kind create cluster --name $(KIND_CLUSTER) --config infra/kind/courier-dev.yaml
@@ -141,3 +141,9 @@ configure-user-service-sso-runtime:
 
 update-kafka-admin-basic-auth:
 	./scripts/update-kafka-admin-basic-auth.sh
+
+update-argocd-admin-basic-auth:
+	./scripts/update-argocd-admin-basic-auth.sh
+
+enable-argocd-public-dashboard:
+	./scripts/enable-argocd-public-dashboard.sh

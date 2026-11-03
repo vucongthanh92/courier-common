@@ -1,0 +1,9 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: courier-parameter-store
+spec:
+  provider:
+    aws:
+      service: ParameterStore
+      region: ap-southeast-2

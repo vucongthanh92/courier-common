@@ -1,8 +1,10 @@
 # Argo CD on AWS development K3s
 
 This runbook installs the non-HA Argo CD control plane on the Courier
-Application EC2. It is intentionally private: `argocd-server` remains a
-Kubernetes `ClusterIP` Service, and no AWS security-group rule is added.
+Application EC2. `argocd-server` remains a Kubernetes `ClusterIP` Service and
+no AWS security-group rule is added. The dashboard is exposed only through the
+existing Traefik HTTPS entry point at `/admin/argocd`, protected by Traefik
+Basic Auth and then the normal Argo CD login.
 
 The pinned version is `v3.5.6`. Upgrade it only by changing
 `infra/argocd/aws-dev/kustomization.yaml` and `bootstrap.sh` in the same
@@ -47,7 +49,41 @@ aws ssm get-command-invocation \
   --instance-id "$APPLICATION_INSTANCE_ID"
 ```
 
-## Open the dashboard privately
+## Enable the protected HTTPS dashboard
+
+Create a dedicated Basic Auth credential first. It is stored as a bcrypt
+`htpasswd` entry in Parameter Store and the command never prints the password
+or hash:
+
+```bash
+AWS_PROFILE=courier-terraform make update-argocd-admin-basic-auth
+```
+
+After the GitOps change is merged, bootstrap its Argo CD Application once:
+
+```bash
+AWS_PROFILE=courier-terraform make enable-argocd-public-dashboard
+```
+
+Wait for the `argocd-dashboard-dev` Application to become `Synced`, then open:
+
+```text
+https://courier.io.vn/admin/argocd
+```
+
+The browser must pass both layers:
+
+1. Traefik Basic Auth, using the credential stored at
+   `/courier/dev/admin-argocd/runtime/BASIC_AUTH_USERS`.
+2. Argo CD login, normally with username `admin` and its separately managed
+   Argo CD password.
+
+TLS terminates at Traefik; `argocd-server` receives HTTP only on the private
+K3s Service. The server is configured with `server.basehref` and
+`server.rootpath` set to `/admin/argocd`, so assets, API requests, and browser
+navigation stay below that prefix.
+
+## Open the dashboard through the private fallback
 
 First start a temporary loopback-only port-forward process on the node:
 
@@ -88,7 +124,8 @@ aws ssm send-command \
 
 After the first login, rotate the `admin` password and configure repository
 credentials before creating application resources. Do not give Argo CD an AWS
-security-group ingress rule or expose its service through Traefik.
+security-group ingress rule; all public access stays behind the authenticated
+Traefik route.
 
 ## Verify the private boundary
 
