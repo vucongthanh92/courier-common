@@ -69,7 +69,7 @@ Event envelope example:
   "event_version": 1,
   "occurred_at": "2026-07-31T00:00:00Z",
   "source": "user-service",
-  "aggregate_type": "user",
+  "aggregate_type": "user_verified_success",
   "aggregate_id": "123",
   "payload": {
     "user_id": 123,
