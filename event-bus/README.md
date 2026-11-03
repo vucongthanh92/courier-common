@@ -12,9 +12,9 @@ RabbitMQ remains a possible alternative for command-like workflows that need sim
 
 - Bootstrap server: `localhost:9092`
 - Dashboard: `http://localhost:8081`
-- Main user event topic: `courier.user.events.v1`
-- Retry topic: `courier.user.events.retry.v1`
-- Dead-letter topic: `courier.user.events.dlq.v1`
+- Email-verification event topic: `courier.user.email-verified.v1`
+- Email-verification retry topic: `courier.user.email-verified.retry.v1`
+- Email-verification dead-letter topic: `courier.user.email-verified.dlq.v1`
 - Chat event topic: `courier.chat.events.v1`
 - Assistant request topic: `courier.assistant.requested.v1`
 - Assistant response topic: `courier.assistant.responded.v1`
@@ -46,10 +46,10 @@ Each topic object uses:
 
 ```json
 {
-  "name": "courier.user.events.v1",
+  "name": "courier.user.email-verified.v1",
   "partitions": 3,
   "replicationFactor": 1,
-  "description": "User lifecycle integration events."
+  "description": "User email-verification integration events."
 }
 ```
 
