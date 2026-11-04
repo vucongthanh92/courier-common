@@ -43,6 +43,11 @@ Grafana has a five-minute startup window because plugin initialization is
 measurably slower on the constrained Application EC2; readiness and liveness
 checks begin only after that startup probe succeeds.
 
+**Verified on AWS dev (2026-11-04):** Grafana `13.3.0` was OOM-killed at the
+initial `256Mi` memory limit during startup. Its request is therefore `256Mi`
+and limit `768Mi`; this is a runtime correction, not an estimate. Monitor the
+Application EC2 before increasing any other observability limits.
+
 The previous `tracing-service` Docker Compose stack is retired for AWS dev and
 is not an operational dependency. Grafana Alloy is used instead of Promtail:
 Promtail reached end of life on 2026-03-02, and Alloy can tail Kubernetes logs
