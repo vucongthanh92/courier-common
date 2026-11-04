@@ -39,6 +39,9 @@ All image versions and resources are committed in
 `k8s/overlays/dev/observability`. The three PVCs total 8 GiB. The CPU/memory
 requests and limits are a **provisional sizing assumption**, not an EC2
 measurement; review them after workload has run on the Application EC2.
+Grafana has a five-minute startup window because plugin initialization is
+measurably slower on the constrained Application EC2; readiness and liveness
+checks begin only after that startup probe succeeds.
 
 The previous `tracing-service` Docker Compose stack is retired for AWS dev and
 is not an operational dependency. Grafana Alloy is used instead of Promtail:
