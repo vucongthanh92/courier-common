@@ -48,6 +48,11 @@ initial `256Mi` memory limit during startup. Its request is therefore `256Mi`
 and limit `768Mi`; this is a runtime correction, not an estimate. Monitor the
 Application EC2 before increasing any other observability limits.
 
+The Alloy and Prometheus ServiceAccounts receive namespace-scoped Roles in
+`courier-dev`; they do not receive a cluster-wide read role. This RBAC boundary
+is required for Alloy to discover labeled backend Pods and for Prometheus to
+discover opted-in Services.
+
 The previous `tracing-service` Docker Compose stack is retired for AWS dev and
 is not an operational dependency. Grafana Alloy is used instead of Promtail:
 Promtail reached end of life on 2026-03-02, and Alloy can tail Kubernetes logs

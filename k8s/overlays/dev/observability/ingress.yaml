@@ -2,6 +2,7 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: logging-dashboard-auth
+  namespace: courier-observability
 spec:
   basicAuth:
     secret: logging-dashboard-basic-auth
@@ -11,6 +12,7 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: logging-dashboard
+  namespace: courier-observability
 spec:
   entryPoints:
     - websecure
