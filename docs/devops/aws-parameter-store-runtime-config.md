@@ -31,6 +31,7 @@ Examples:
 /courier/dev/user-service/runtime/OAUTH_GOOGLE_CLIENT_SECRET
 /courier/dev/chat-service/runtime/COURIER_PUBLIC_ORIGINS
 /courier/dev/admin-kafka/runtime/BASIC_AUTH_USERS
+/courier/dev/admin-logging/runtime/BASIC_AUTH_USERS
 ```
 
 Use upper-snake-case for `<ENV_VAR_NAME>`, even for a value consumed only by a
@@ -86,6 +87,29 @@ The `argocd-dashboard-dev` Application mirrors this parameter into the
 `argocd-admin-basic-auth` Secret in the `argocd` namespace. Traefik uses it
 before forwarding `https://courier.io.vn/admin/argocd` to the private
 `argocd-server` Service. Argo CD's own login remains a second layer.
+
+### Logging dashboard
+
+Grafana is available at `https://courier.io.vn/admin/logging`. Its Traefik
+Basic Auth credential and Grafana administrator password are separate
+SecureStrings:
+
+```text
+/courier/dev/admin-logging/runtime/BASIC_AUTH_USERS
+/courier/dev/admin-logging/runtime/GRAFANA_ADMIN_PASSWORD
+```
+
+Create both before the first Grafana deployment without printing a secret:
+
+```bash
+AWS_PROFILE=courier-terraform make update-logging-dashboard-credentials
+```
+
+The observability ExternalSecret mirrors them into
+`logging-dashboard-credentials` in `courier-observability`. See
+[AWS Dev Observability](aws-observability.md) for the deployment and access
+model. Basic Auth can be rotated through Parameter Store; Grafana's initial
+administrator password is only applied when Grafana creates its database.
 
 ## Synchronization model
 

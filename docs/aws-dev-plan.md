@@ -102,7 +102,7 @@ must not be used as Linux container image sizes.
 | Ingress | Traefik with cert-manager/one coordinated ACME writer | HTTPS after domain/DNS are approved; raw data-service protocols remain private, while purpose-built admin UIs may use authenticated `/admin/` routes |
 | Delivery | GitHub Actions builds ECR images using OIDC, then opens a GitOps image-update PR; Argo CD syncs merged Git | Immutable SHA/digest tags; no `latest` deployments |
 | Configuration / secrets | Non-secret config in Kustomize ConfigMaps; secrets from an approved secret mechanism | Never commit credentials; frontend values are build-time values |
-| Observability | Prometheus + Grafana first, then logs/traces with bounded retention | Requests/limits and measurements determine the storage budget |
+| Observability | Prometheus, Grafana, Loki, and Grafana Alloy in K3s; logs and metrics have bounded retention | Grafana is the protected `/admin/logging` operational UI; requests/limits and measurements determine the storage budget |
 | Backup | EBS/S3 and database backup, with restore drills | A volume is not a backup |
 
 ### Runtime configuration standard (approved; rollout pending)
@@ -137,7 +137,7 @@ measurements on EC2 remain required before scaling.
 | Data EC2 | `t4g.medium` (2 vCPU, 4 GiB): PostgreSQL, Redis, one Kafka broker, and Qdrant |
 | EBS | gp3: 25 GiB application root, 25 GiB data root, and 60 GiB data volume (110 GiB total) |
 | Object storage | Two S3 buckets: one for files and one for backups |
-| Public boundary | HTTPS only; databases, data-service protocols, and Grafana remain private. The Argo CD dashboard is available only as the explicitly authenticated operational UI `https://courier.io.vn/admin/argocd`, beneath Traefik Basic Auth and the Argo CD login. |
+| Public boundary | HTTPS only; databases and data-service protocols remain private. The Argo CD dashboard and Grafana dashboard are explicitly authenticated operational UIs at `https://courier.io.vn/admin/argocd` and `https://courier.io.vn/admin/logging`; both use Traefik Basic Auth, while Grafana additionally requires its own login. |
 | Cost guardrails | AWS Budget alerts at USD 25, 40, and 47; disk-usage alerts at 70% and 85%; short log retention and backup lifecycle transitions |
 
 The current compute estimate is USD 10.18/month for the application node and
@@ -163,6 +163,22 @@ because the remaining buffer is small.
 - Use separate least-privilege IAM roles for GitHub OIDC image publishing and
   Argo CD repository read access. Terraform owns AWS; Argo CD owns Kubernetes
   resources.
+
+### AWS dev observability (implemented; validation pending)
+
+The GitOps overlay `k8s/overlays/dev/observability` deploys Prometheus, Loki,
+Grafana Alloy, and Grafana to `courier-observability`. Grafana is exposed only
+through the protected `/admin/logging` route; Prometheus and Loki are
+ClusterIP-only. Logs are collected from the four initial backend services, and
+metrics are scraped only from the verified `user-service` (port `8001`) and
+`chat-service` (port `8002`) endpoints. Payment Gateway and Agent Gateway are
+log-only until their metrics endpoints are implemented and verified.
+
+The stack uses 7-day Prometheus and Loki retention and requests 8 GiB across
+three gp3-backed PVCs. Its CPU, memory, and storage figures are planning
+assumptions; actual EC2 measurements, scrape health, and disk growth remain
+pending after the Application is synchronized. Operations are documented in
+[AWS Dev Observability](devops/aws-observability.md).
 
 ## Delivery, migration, and rollback rules
 
