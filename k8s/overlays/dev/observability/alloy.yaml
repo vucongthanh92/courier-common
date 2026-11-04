@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-config
+data:
+  config.alloy: |
+    discovery.kubernetes "courier_dev_pods" {
+      role = "pod"
+      namespaces {
+        names = ["courier-dev"]
+      }
+    }
+
+    discovery.relabel "courier_backend_logs" {
+      targets = discovery.kubernetes.courier_dev_pods.targets
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_label_observability_courier_io_logs"]
+        regex         = "true"
+        action        = "keep"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        target_label  = "namespace"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_label_app"]
+        target_label  = "service_name"
+      }
+
+      rule {
+        target_label = "environment"
+        replacement  = "dev"
+      }
+    }
+
+    loki.source.kubernetes "courier_backend_logs" {
+      targets    = discovery.relabel.courier_backend_logs.output
+      forward_to = [loki.write.default.receiver]
+    }
+
+    loki.write "default" {
+      endpoint {
+        url = "http://loki.courier-observability.svc.cluster.local:3100/loki/api/v1/push"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alloy
+  labels:
+    app: alloy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alloy
+  template:
+    metadata:
+      labels:
+        app: alloy
+    spec:
+      serviceAccountName: alloy
+      containers:
+        - name: alloy
+          image: grafana/alloy:v1.21.3
+          args:
+            - run
+            - /etc/alloy/config.alloy
+            - --server.http.listen-addr=0.0.0.0:12345
+            - --storage.path=/var/lib/alloy/data
+          ports:
+            - name: http
+              containerPort: 12345
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alloy
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/alloy/data
+      volumes:
+        - name: config
+          configMap:
+            name: alloy-config
+        - name: data
+          emptyDir: {}

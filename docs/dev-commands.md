@@ -22,6 +22,8 @@ Run from the repository root.
 | `make migrate-user-service-oauth-runtime` | Copy existing Google OAuth SecureStrings into the standard user-service runtime prefix without printing them. |
 | `make update-user-service-google-oauth` | Interactively update Google OAuth credentials in the standard runtime prefix. |
 | `make update-kafka-admin-basic-auth` | Create or rotate the AWS Parameter Store credential for `https://courier.io.vn/admin/kafka`; it never prints the password or hash. |
+| `make update-logging-dashboard-credentials` | Create or rotate the Basic Auth and Grafana administrator credentials for `https://courier.io.vn/admin/logging`; it never prints them. |
+| `make enable-observability` | Bootstrap the GitOps Application for the AWS dev Prometheus, Loki, Alloy, and Grafana stack. |
 
 ## user-service Commands
 

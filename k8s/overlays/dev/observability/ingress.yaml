@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: logging-dashboard-auth
+spec:
+  basicAuth:
+    secret: logging-dashboard-credentials
+    removeHeader: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: logging-dashboard
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`courier.io.vn`) && PathPrefix(`/admin/logging`)
+      kind: Rule
+      middlewares:
+        - name: logging-dashboard-auth
+      services:
+        - name: grafana
+          port: 80
+  tls:
+    certResolver: letsencrypt

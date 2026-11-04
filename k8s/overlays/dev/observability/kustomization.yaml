@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: courier-observability
+
+resources:
+  - namespace.yaml
+  - rbac.yaml
+  - runtime-secrets.yaml
+  - prometheus.yaml
+  - loki.yaml
+  - grafana.yaml
+  - alloy.yaml
+  - ingress.yaml

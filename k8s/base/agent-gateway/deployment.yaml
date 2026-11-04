@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: agent-gateway
+        observability.courier.io/logs: "true"
     spec:
       containers:
         - name: agent-gateway

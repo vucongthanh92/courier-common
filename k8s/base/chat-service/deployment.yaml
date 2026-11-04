@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: chat-service
+        observability.courier.io/logs: "true"
     spec:
       containers:
         - name: chat-service

@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service
+  labels:
+    observability.courier.io/metrics: "true"
 spec:
   selector:
     app: user-service
@@ -12,4 +14,7 @@ spec:
     - name: grpc
       port: 6001
       targetPort: grpc
+    - name: metrics
+      port: 8001
+      targetPort: metrics
   type: ClusterIP
