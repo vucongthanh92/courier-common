@@ -105,11 +105,12 @@ Create both before the first Grafana deployment without printing a secret:
 AWS_PROFILE=courier-terraform make update-logging-dashboard-credentials
 ```
 
-The observability ExternalSecret mirrors them into
-`logging-dashboard-credentials` in `courier-observability`. See
-[AWS Dev Observability](aws-observability.md) for the deployment and access
-model. Basic Auth can be rotated through Parameter Store; Grafana's initial
-administrator password is only applied when Grafana creates its database.
+The observability ExternalSecrets mirror them into separate Basic Auth and
+Grafana administrator Secrets in `courier-observability`; Traefik requires the
+Basic Auth Secret to contain only the `users` key. See [AWS Dev
+Observability](aws-observability.md) for the deployment and access model. Basic
+Auth can be rotated through Parameter Store; Grafana's initial administrator
+password is only applied when Grafana creates its database.
 
 ## Synchronization model
 

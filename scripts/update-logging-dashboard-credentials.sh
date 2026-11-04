@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Creates the initial credentials for the protected public Grafana dashboard,
 # and can rotate its Traefik Basic Auth credential without printing passwords
-# or the generated bcrypt hash. Grafana uses its admin password only on first
-# database initialization; see docs/devops/aws-observability.md.
+# or the generated bcrypt hash. It uses a local Apache htpasswd binary, so
+# Docker Desktop is not an operational prerequisite. Grafana uses its admin
+# password only on first database initialization; see
+# docs/devops/aws-observability.md.
 set -euo pipefail
 
 readonly AWS_REGION="${AWS_REGION:-ap-southeast-2}"
 readonly BASIC_AUTH_PARAMETER="${BASIC_AUTH_PARAMETER:-/courier/dev/admin-logging/runtime/BASIC_AUTH_USERS}"
 readonly GRAFANA_PASSWORD_PARAMETER="${GRAFANA_PASSWORD_PARAMETER:-/courier/dev/admin-logging/runtime/GRAFANA_ADMIN_PASSWORD}"
-readonly HTTPD_IMAGE="httpd:2.4.65-alpine"
-
 username=""
 basic_auth_password=""
 grafana_admin_password=""
@@ -28,7 +28,7 @@ require_command() {
 }
 
 require_command aws
-require_command docker
+require_command htpasswd
 
 read -r -p "Logging dashboard username: " username
 read -r -s -p "Logging dashboard Basic Auth password: " basic_auth_password
@@ -49,7 +49,7 @@ printf '\n'
   exit 1
 }
 
-users="$(printf '%s\n' "${basic_auth_password}" | docker run --rm -i --entrypoint htpasswd "${HTTPD_IMAGE}" -inB -C 12 "${username}")"
+users="$(printf '%s\n' "${basic_auth_password}" | htpasswd -inB -C 12 "${username}")"
 
 aws ssm put-parameter \
   --region "${AWS_REGION}" \

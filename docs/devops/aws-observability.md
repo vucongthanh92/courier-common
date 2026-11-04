@@ -91,9 +91,11 @@ passwords or the generated bcrypt hash:
 AWS_PROFILE=courier-terraform make update-logging-dashboard-credentials
 ```
 
-External Secrets Operator mirrors them into the
-`logging-dashboard-credentials` Kubernetes Secret every 15 minutes. After this
-branch is merged to `main`, bootstrap its Argo CD Application:
+External Secrets Operator mirrors them every 15 minutes into two distinct
+Kubernetes Secrets: `logging-dashboard-basic-auth` for Traefik and
+`logging-dashboard-grafana-admin` for Grafana. Traefik requires the Basic Auth
+Secret to contain only its `users` key. After this branch is merged to `main`,
+bootstrap its Argo CD Application:
 
 ```bash
 AWS_PROFILE=courier-terraform make enable-observability
