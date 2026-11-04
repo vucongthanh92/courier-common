@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
+  namespace: courier-observability
 data:
   datasources.yaml: |
     apiVersion: 1
@@ -22,6 +23,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: grafana-data
+  namespace: courier-observability
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -32,6 +34,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: courier-observability
   labels:
     app: grafana
 spec:
@@ -111,6 +114,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: grafana
+  namespace: courier-observability
 spec:
   type: ClusterIP
   selector:

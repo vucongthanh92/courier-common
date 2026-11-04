@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
+  namespace: courier-observability
 data:
   prometheus.yml: |
     global:
@@ -29,6 +30,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: prometheus-data
+  namespace: courier-observability
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -39,6 +41,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
+  namespace: courier-observability
   labels:
     app: prometheus
 spec:
@@ -98,6 +101,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
+  namespace: courier-observability
 spec:
   type: ClusterIP
   selector:
