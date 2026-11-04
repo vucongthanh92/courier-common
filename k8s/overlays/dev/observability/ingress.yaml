@@ -4,7 +4,7 @@ metadata:
   name: logging-dashboard-auth
 spec:
   basicAuth:
-    secret: logging-dashboard-credentials
+    secret: logging-dashboard-basic-auth
     removeHeader: true
 ---
 apiVersion: traefik.io/v1alpha1
