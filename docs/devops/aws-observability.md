@@ -7,15 +7,17 @@ stack in the `courier-observability` namespace:
 
 ```text
 Courier backend Pods (courier-dev)
-        |                         |
-        | /metrics                | Kubernetes Pod log API
-        v                         v
-  Prometheus                 Grafana Alloy
-        |                         |
-        |                         v
-        +--------------------> Loki
-                  |              |
-                  +------> Grafana <------ Traefik Basic Auth
+        |                 |                 |
+        | /metrics        | Kubernetes logs | Pyroscope SDK push
+        v                 v                 v
+  Prometheus          Grafana Alloy      Pyroscope
+        |                 |                 |
+        |                 v                 |
+        |               Loki                |
+        |                 |                 |
+        +-----------------+-----------------+
+                          |
+                  Grafana <------ Traefik Basic Auth
                                   |
                                   v
                  https://courier.io.vn/admin/logging
@@ -33,10 +35,11 @@ the existing Argo CD operational dashboard.
 | Prometheus | Scrapes opted-in backend metrics | 7 days; 2 GiB PVC |
 | Loki | Stores backend container logs | 7 days; 5 GiB PVC |
 | Grafana Alloy | Reads selected Pod logs through the Kubernetes API and sends them to Loki | no persistent data |
-| Grafana | Queries Prometheus and Loki | 1 GiB PVC |
+| Pyroscope | Receives continuous Go profiles through private in-cluster HTTP | 3 days; 5 GiB PVC |
+| Grafana | Queries Prometheus, Loki, and Pyroscope | 1 GiB PVC |
 
 All image versions and resources are committed in
-`k8s/overlays/dev/observability`. The three PVCs total 8 GiB. The CPU/memory
+`k8s/overlays/dev/observability`. The four PVCs total 13 GiB. The CPU/memory
 requests and limits are a **provisional sizing assumption**, not an EC2
 measurement; review them after workload has run on the Application EC2.
 Grafana has a five-minute startup window because plugin initialization is

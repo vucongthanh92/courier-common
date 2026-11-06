@@ -102,7 +102,7 @@ must not be used as Linux container image sizes.
 | Ingress | Traefik with cert-manager/one coordinated ACME writer | HTTPS after domain/DNS are approved; raw data-service protocols remain private, while purpose-built admin UIs may use authenticated `/admin/` routes |
 | Delivery | GitHub Actions builds ECR images using OIDC, then opens a GitOps image-update PR; Argo CD syncs merged Git | Immutable SHA/digest tags; no `latest` deployments |
 | Configuration / secrets | Non-secret config in Kustomize ConfigMaps; secrets from an approved secret mechanism | Never commit credentials; frontend values are build-time values |
-| Observability | Prometheus, Grafana, Loki, and Grafana Alloy in K3s; logs and metrics have bounded retention | Grafana is the protected `/admin/logging` operational UI; requests/limits and measurements determine the storage budget |
+| Observability | Prometheus, Grafana, Loki, Grafana Alloy, and Pyroscope in K3s; logs, metrics, and profiles have bounded retention | Grafana is the protected `/admin/logging` operational UI; Pyroscope is private and only enabled per service with runtime flags |
 | Backup | EBS/S3 and database backup, with restore drills | A volume is not a backup |
 
 ### Runtime configuration standard (approved; rollout pending)

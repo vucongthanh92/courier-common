@@ -1,0 +1,25 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: chat-service-runtime
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  refreshPolicy: Periodic
+  refreshInterval: 15m
+  secretStoreRef:
+    kind: SecretStore
+    name: courier-parameter-store
+  target:
+    name: chat-service-runtime-secrets
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  dataFrom:
+    - find:
+        path: /courier/dev/chat-service/runtime
+        name:
+          regexp: ".*"
+      rewrite:
+        - regexp:
+            source: ".*/([^/]+)$"
+            target: "$1"

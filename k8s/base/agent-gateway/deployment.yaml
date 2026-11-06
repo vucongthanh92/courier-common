@@ -12,6 +12,8 @@ spec:
       labels:
         app: agent-gateway
         observability.courier.io/logs: "true"
+      annotations:
+        reloader.stakater.com/auto: "true"
     spec:
       containers:
         - name: agent-gateway
@@ -22,6 +24,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: agent-gateway-runtime
+            - secretRef:
+                name: agent-gateway-runtime-secrets
+                optional: true
           ports:
             - name: http
               containerPort: 5010

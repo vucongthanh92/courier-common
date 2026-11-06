@@ -7,6 +7,7 @@ resources:
   - runtime-secrets.yaml
   - prometheus.yaml
   - loki.yaml
+  - pyroscope.yaml
   - grafana.yaml
   - alloy.yaml
   - ingress.yaml

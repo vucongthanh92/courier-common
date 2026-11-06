@@ -5,6 +5,7 @@ kind: Kustomization
 
 resources:
   - ../../../base/agent-gateway
+  - runtime-config.yaml
 
 generators:
   - ksops-generator.yaml

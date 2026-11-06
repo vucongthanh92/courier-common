@@ -12,6 +12,8 @@ spec:
       labels:
         app: chat-service
         observability.courier.io/logs: "true"
+      annotations:
+        reloader.stakater.com/auto: "true"
     spec:
       containers:
         - name: chat-service
@@ -22,6 +24,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: chat-service-config
+            - secretRef:
+                name: chat-service-runtime-secrets
+                optional: true
           ports:
             - name: http
               containerPort: 5002
