@@ -18,6 +18,12 @@ data:
         access: proxy
         url: http://loki.courier-observability.svc.cluster.local:3100
         editable: false
+      - uid: pyroscope
+        name: Pyroscope
+        type: grafana-pyroscope-datasource
+        access: proxy
+        url: http://pyroscope.courier-observability.svc.cluster.local:4040
+        editable: false
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
