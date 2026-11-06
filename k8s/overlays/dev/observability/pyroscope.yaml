@@ -47,7 +47,7 @@ spec:
     spec:
       containers:
         - name: pyroscope
-          image: grafana/pyroscope:v2.4.3
+          image: grafana/pyroscope:2.4.3
           args:
             - -config.file=/etc/pyroscope/config.yaml
           ports:
