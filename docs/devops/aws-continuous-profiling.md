@@ -85,7 +85,7 @@ and Pyroscope to explain where the Go process spent CPU or allocated memory.
 
 ## Capacity and retention
 
-The K3s manifest pins `grafana/pyroscope:v2.4.3`, uses a 5 GiB local PVC, and
+The K3s manifest pins `grafana/pyroscope:2.4.3`, uses a 5 GiB local PVC, and
 retains profiles for 3 days. It requests `100m` CPU and `256Mi` memory, with
 limits of `500m` and `768Mi`.
 
