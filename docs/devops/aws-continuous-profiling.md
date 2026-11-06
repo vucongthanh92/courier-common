@@ -89,6 +89,10 @@ The K3s manifest pins `grafana/pyroscope:2.4.3`, uses a 5 GiB local PVC, and
 retains profiles for 3 days. It requests `100m` CPU and `256Mi` memory, with
 limits of `500m` and `768Mi`.
 
+Pyroscope has a five-minute startup probe because the single-binary 2.x server
+initializes multiple internal modules before `/ready` becomes healthy. Liveness
+and readiness probes begin only after that window succeeds.
+
 These values are **assumptions**, not measured workload requirements. Pyroscope
 single-node filesystem storage is appropriate only for the current one-node dev
 cluster. Measure its PVC growth and Application EC2 pressure after real
