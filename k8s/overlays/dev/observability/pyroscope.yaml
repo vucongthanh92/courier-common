@@ -57,11 +57,16 @@ spec:
             httpGet:
               path: /ready
               port: http
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /ready
               port: http
-            initialDelaySeconds: 15
           resources:
             # Provisional sizing: validate against Application EC2 after profiles arrive.
             requests:
