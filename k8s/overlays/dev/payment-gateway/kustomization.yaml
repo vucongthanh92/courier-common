@@ -15,4 +15,4 @@ generators:
 images:
   - name: ghcr.io/vucongthanh92/courier/payment-gateway
     newName: 016170038458.dkr.ecr.ap-southeast-2.amazonaws.com/courier/payment-gateway
-    newTag: sha-352f73a6c57f28242bb92619239c9550c657d612
+    newTag: sha-06258e09b7f4b11f93f9004160314d2f0c8458b4
